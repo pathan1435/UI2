@@ -186,11 +186,11 @@ class WorkFlow extends React.Component {
     });
   
     try {
-      // Update JSON file
+     
       const { data: jsonFile } = await octokit.rest.repos.getContent({
         owner: 'pathankaif1435',
         repo: 'pathankaif1435',
-        path: 'data.json', // Change the file path as needed
+        path: 'kaif.json', 
       });
   
       const jsonSha = jsonFile.sha;
@@ -201,17 +201,17 @@ class WorkFlow extends React.Component {
       await octokit.rest.repos.createOrUpdateFileContents({
         owner: 'pathankaif1435',
         repo: 'pathankaif1435',
-        path: 'data.json', // Change the file path as needed
+        path: 'kaif.json', 
         message: 'Update JSON file',
         content: btoa(updatedJsonContent),
         sha: jsonSha,
       });
   
-      // Update Markdown file
+     
       const { data: mdFile } = await octokit.rest.repos.getContent({
         owner: 'pathankaif1435',
         repo: 'pathankaif1435',
-        path: 'file.md', // Change the file path as needed
+        path: 'kaif.md', 
       });
   
       const mdSha = mdFile.sha;
@@ -221,7 +221,7 @@ class WorkFlow extends React.Component {
       await octokit.rest.repos.createOrUpdateFileContents({
         owner: 'pathankaif1435',
         repo: 'pathankaif1435',
-        path: 'file.md', // Change the file path as needed
+        path: 'kaif.md', 
         message: 'Update Markdown file',
         content: btoa(updatedMdContent),
         sha: mdSha,
