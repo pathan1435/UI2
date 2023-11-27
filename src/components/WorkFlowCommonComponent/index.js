@@ -158,16 +158,81 @@ class WorkFlow extends React.Component {
     }
   };
 
+  update1Form = async (data) => {
+    await this.updateForm(data);
+    await this.addgit();
+  };
+  
   updateForm = (data) => {
-    const { activeStage, usecaseData } = this.state
-    this.props.updateStep(data, activeStage)
+    const { activeStage, usecaseData } = this.state;
+    this.props.updateStep(data, activeStage);
     this.setState({
       initalStateUsecaseDevelopment: usecaseData.stepinput.stages[0].usecaseDevelopment,
       createUsecase: false,
-      uploadScreenshot: false
-    })
-    // this.setState(this.props.usecaseData.stepinput.stages[0].usecaseDevelopment)
-  }
+      uploadScreenshot: false,
+    });
+  };
+  
+  addgit = async () => {
+    const { initalStateUsecaseDevelopment } = this.state;
+    const jsonParams = initalStateUsecaseDevelopment;
+    const mdContent = 'Your Markdown content goes here'; // Replace with your actual Markdown content
+    await this.addgitfile(jsonParams, mdContent);
+  };
+  
+  addgitfile = async (params, mdContent) => {
+    const octokit = new Octokit({
+      auth: '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',
+    });
+  
+    try {
+      // Update JSON file
+      const { data: jsonFile } = await octokit.rest.repos.getContent({
+        owner: 'pathankaif1435',
+        repo: 'pathankaif1435',
+        path: 'data.json', // Change the file path as needed
+      });
+  
+      const jsonSha = jsonFile.sha;
+      const existingJsonContent = atob(jsonFile.content);
+      const newJsonData = JSON.stringify(params);
+      const updatedJsonContent = existingJsonContent + newJsonData;
+  
+      await octokit.rest.repos.createOrUpdateFileContents({
+        owner: 'pathankaif1435',
+        repo: 'pathankaif1435',
+        path: 'data.json', // Change the file path as needed
+        message: 'Update JSON file',
+        content: btoa(updatedJsonContent),
+        sha: jsonSha,
+      });
+  
+      // Update Markdown file
+      const { data: mdFile } = await octokit.rest.repos.getContent({
+        owner: 'pathankaif1435',
+        repo: 'pathankaif1435',
+        path: 'file.md', // Change the file path as needed
+      });
+  
+      const mdSha = mdFile.sha;
+      const existingMdContent = atob(mdFile.content);
+      const updatedMdContent = existingMdContent + mdContent;
+  
+      await octokit.rest.repos.createOrUpdateFileContents({
+        owner: 'pathankaif1435',
+        repo: 'pathankaif1435',
+        path: 'file.md', // Change the file path as needed
+        message: 'Update Markdown file',
+        content: btoa(updatedMdContent),
+        sha: mdSha,
+      });
+  
+      console.log('Files updated successfully');
+    } catch (error) {
+      console.error('Error updating files:', error);
+    }
+  };
+  
 
   moveToNextPage = (type) => {
     const { usecaseData, activeStage } = this.state;
@@ -382,7 +447,7 @@ class WorkFlow extends React.Component {
                 </div>
                 <div className="form-group row">
                   <div className="col-sm-12 text-right">
-                    <button className="btn btn-primary save-btn" onClick={() => this.updateForm(usecaseData)}>
+                    <button className="btn btn-primary save-btn" onClick={() => this.update1Form(usecaseData)}>
                       Save
                     </button>
                   </div>
